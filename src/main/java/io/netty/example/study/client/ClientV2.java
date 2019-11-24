@@ -32,7 +32,7 @@ public class ClientV2 {
         bootstrap.group(new NioEventLoopGroup());
         bootstrap.channel(NioSocketChannel.class);
 
-        // 连接超时等待
+        // 连接超时等待 10s
         bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10 * 1000);
 
         bootstrap.handler(new ChannelInitializer<NioSocketChannel>() {
@@ -54,6 +54,15 @@ public class ClientV2 {
         });
 
         ChannelFuture channelFuture = bootstrap.connect("127.0.0.1", 8090);
+        channelFuture.addListener(future -> {
+            if (future.isSuccess()) {
+                Object object = future.get();
+
+                System.out.println("成功了" + object);
+            } else {
+                System.out.println("失败了");
+            }
+        });
         channelFuture.sync();
 
 
