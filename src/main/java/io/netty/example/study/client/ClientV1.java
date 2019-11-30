@@ -47,6 +47,7 @@ public class ClientV1 {
 
         OrderOperation orderOperation = new OrderOperation(1001, "org.shuyi.App#getxx");
 
+
         channelFuture.channel().writeAndFlush(orderOperation);
 
         channelFuture.channel().closeFuture().get();

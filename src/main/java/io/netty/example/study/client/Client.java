@@ -49,7 +49,12 @@ public class Client {
 
         RequestMessage rm =  new RequestMessage(IdUtil.nextId(), new OrderOperation(1001,"org.shuyi.App#getxx"));
 
-        channelFuture.channel().writeAndFlush(rm);
+
+        for (int i = 0; i < 10; i++) {
+            channelFuture.channel().writeAndFlush(rm);
+        }
+
+
 
 
         channelFuture.channel().closeFuture().get();

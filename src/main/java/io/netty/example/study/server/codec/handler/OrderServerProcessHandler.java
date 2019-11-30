@@ -1,8 +1,12 @@
 package io.netty.example.study.server.codec.handler;
 
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.example.study.common.*;
+import io.netty.example.study.common.Operation;
+import io.netty.example.study.common.OperationResult;
+import io.netty.example.study.common.RequestMessage;
+import io.netty.example.study.common.ResponseMessage;
 import lombok.extern.java.Log;
 
 /**
@@ -20,13 +24,8 @@ public class OrderServerProcessHandler extends SimpleChannelInboundHandler<Reque
         responseMessage.setMessageHeader(msg.getMessageHeader());
         responseMessage.setMessageBody(operationResult);
 
-        ctx.channel().eventLoop().execute(() ->
-                System.out.println(123));
 
         ctx.writeAndFlush(responseMessage);
-
-
-
     }
 
 

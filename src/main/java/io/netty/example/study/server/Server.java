@@ -16,9 +16,13 @@ import io.netty.example.study.server.codec.OrderProtocolEncoder;
 import io.netty.example.study.server.codec.handler.MetricHandler;
 import io.netty.example.study.server.codec.handler.OrderServerProcessHandler;
 import io.netty.handler.codec.MessageToMessageEncoder;
+import io.netty.handler.flush.FlushConsolidationHandler;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import io.netty.handler.traffic.GlobalTrafficShapingHandler;
 import io.netty.util.concurrent.DefaultThreadFactory;
+import io.netty.util.concurrent.EventExecutorGroup;
+import io.netty.util.concurrent.UnorderedThreadPoolEventExecutor;
 
 import java.util.concurrent.ExecutionException;
 
@@ -47,6 +51,11 @@ public class Server {
         MetricHandler metricHandler = new MetricHandler();
         serverBootstrap.handler(new LoggingHandler(LogLevel.INFO));
 
+        // 业务处理线程池
+        EventExecutorGroup business = new UnorderedThreadPoolEventExecutor(10, new DefaultThreadFactory("business"));
+        // 限流
+        GlobalTrafficShapingHandler trafficShaping = new GlobalTrafficShapingHandler(new NioEventLoopGroup(), 10 * 1024 * 1024, 10 * 1024 * 1024);
+
         serverBootstrap.childHandler(new ChannelInitializer<NioSocketChannel>() {
 
             @Override
@@ -54,18 +63,20 @@ public class Server {
                 ChannelPipeline pipeline = ch.pipeline();
 
                 pipeline.addLast(new LoggingHandler(LogLevel.DEBUG));
+                pipeline.addLast("TSHandler", trafficShaping);
 
                 pipeline.addLast("frameDecoder", new OrderFrameDecoder());
                 pipeline.addLast("frameEncoder", new OrderFrameEncoder());
-
                 pipeline.addLast("protocolEncoder", new OrderProtocolEncoder());
                 pipeline.addLast("protocolDecoder", new OrderProtocolDecoder());
 
                 pipeline.addLast("metricHandler", metricHandler);
-
                 pipeline.addLast(new LoggingHandler(LogLevel.INFO));
 
-                pipeline.addLast("ServerProcessHandler", new OrderServerProcessHandler());
+                // 异步flush，可提高qps
+                pipeline.addLast("flushEnbance", new FlushConsolidationHandler(5, true));
+
+                pipeline.addLast(business, new OrderServerProcessHandler());
             }
         });
 
