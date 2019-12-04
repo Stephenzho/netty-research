@@ -3,10 +3,10 @@ package io.netty.example.study.common.auth;
 
 import io.netty.example.study.common.Operation;
 import lombok.Data;
-import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 
 @Data
-@Log
+@Slf4j
 public class AuthOperation extends Operation {
 
     private final String userName;

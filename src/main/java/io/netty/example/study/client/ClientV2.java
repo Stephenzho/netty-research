@@ -8,9 +8,7 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.example.study.client.codec.*;
-import io.netty.example.study.client.codec.dispatcher.OperationResultFuture;
-import io.netty.example.study.client.codec.dispatcher.RequestPendingCenter;
-import io.netty.example.study.client.codec.dispatcher.ResponseDispatcherHandler;
+import io.netty.example.study.client.codec.dispatcher.*;
 import io.netty.example.study.common.RequestMessage;
 import io.netty.example.study.common.order.OrderOperation;
 import io.netty.example.study.util.IdUtil;
@@ -19,13 +17,15 @@ import io.netty.handler.logging.LoggingHandler;
 
 import java.util.concurrent.ExecutionException;
 
+/**
+ * @author zhoushuyi
+ */
 public class ClientV2 {
 
     public static void main(String[] args) throws InterruptedException, ExecutionException {
 
 
         RequestPendingCenter rpc = new RequestPendingCenter();
-
 
 
         Bootstrap bootstrap = new Bootstrap();
@@ -48,7 +48,6 @@ public class ClientV2 {
                 pipeline.addLast(new OperationToRequestMessageEncoder());
 
                 pipeline.addLast(new ResponseDispatcherHandler(rpc));
-
                 pipeline.addLast(new LoggingHandler(LogLevel.INFO));
             }
         });

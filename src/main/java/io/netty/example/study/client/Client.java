@@ -10,6 +10,8 @@ import io.netty.example.study.client.codec.OrderFrameDecoder;
 import io.netty.example.study.client.codec.OrderFrameEncoder;
 import io.netty.example.study.client.codec.OrderProtocolDecoder;
 import io.netty.example.study.client.codec.OrderProtocolEncoder;
+import io.netty.example.study.client.codec.dispatcher.ClientIdleCheckHanlder;
+import io.netty.example.study.client.codec.dispatcher.KeepaliveHandler;
 import io.netty.example.study.common.RequestMessage;
 import io.netty.example.study.common.order.OrderOperation;
 import io.netty.example.study.util.IdUtil;
@@ -26,6 +28,7 @@ public class Client {
         bootstrap.group(new NioEventLoopGroup());
         bootstrap.channel(NioSocketChannel.class);
 
+        KeepaliveHandler keepaliveHandler = new KeepaliveHandler();
 
         bootstrap.handler(new ChannelInitializer<NioSocketChannel>() {
 
@@ -33,11 +36,14 @@ public class Client {
             protected void initChannel(NioSocketChannel ch) {
                 ChannelPipeline pipeline = ch.pipeline();
 
+                pipeline.addLast(new ClientIdleCheckHanlder());
+
                 pipeline.addLast(new OrderFrameDecoder());
                 pipeline.addLast(new OrderFrameEncoder());
                 pipeline.addLast(new OrderProtocolDecoder());
                 pipeline.addLast(new OrderProtocolEncoder());
 
+                pipeline.addLast(keepaliveHandler);
                 pipeline.addLast(new LoggingHandler(LogLevel.INFO));
             }
         });
@@ -46,15 +52,8 @@ public class Client {
         ChannelFuture channelFuture = bootstrap.connect("127.0.0.1", 8090);
         channelFuture.sync();
 
-
         RequestMessage rm =  new RequestMessage(IdUtil.nextId(), new OrderOperation(1001,"org.shuyi.App#getxx"));
-
-
-        for (int i = 0; i < 10; i++) {
-            channelFuture.channel().writeAndFlush(rm);
-        }
-
-
+        channelFuture.channel().writeAndFlush(rm);
 
 
         channelFuture.channel().closeFuture().get();

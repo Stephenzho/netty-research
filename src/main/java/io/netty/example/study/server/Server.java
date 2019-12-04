@@ -15,6 +15,7 @@ import io.netty.example.study.server.codec.OrderProtocolDecoder;
 import io.netty.example.study.server.codec.OrderProtocolEncoder;
 import io.netty.example.study.server.codec.handler.MetricHandler;
 import io.netty.example.study.server.codec.handler.OrderServerProcessHandler;
+import io.netty.example.study.server.codec.handler.ServerIdleCheckHandler;
 import io.netty.handler.codec.MessageToMessageEncoder;
 import io.netty.handler.flush.FlushConsolidationHandler;
 import io.netty.handler.logging.LogLevel;
@@ -64,6 +65,7 @@ public class Server {
 
                 pipeline.addLast(new LoggingHandler(LogLevel.DEBUG));
                 pipeline.addLast("TSHandler", trafficShaping);
+                pipeline.addLast("idleCheck", new ServerIdleCheckHandler());
 
                 pipeline.addLast("frameDecoder", new OrderFrameDecoder());
                 pipeline.addLast("frameEncoder", new OrderFrameEncoder());
