@@ -9,14 +9,33 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>wire-common</artifactId>
+    <artifactId>wire-client</artifactId>
 
     <dependencies>
+        <dependency>
+            <groupId>cn.shuyiio</groupId>
+            <artifactId>wire-common</artifactId>
+            <version>${app}</version>
+        </dependency>
+        <dependency>
+            <groupId>cn.shuyiio</groupId>
+            <artifactId>wire-transport</artifactId>
+            <version>${app}</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+        </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
         </dependency>
+
     </dependencies>
+
+
 
 
 </project>

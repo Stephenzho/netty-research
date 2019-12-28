@@ -1,6 +1,6 @@
 package cn.shuyiio.wire;
 
-import cn.shuyiio.wire.transport.Server;
+import cn.shuyiio.wire.server.Server;
 
 import java.util.concurrent.ExecutionException;
 

@@ -2,7 +2,7 @@ package cn.shuyiio.wire.transport.codec;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-import study.common.ResponseMessage;
+import cn.shuyiio.wire.transport.msg.ResponseMessage;
 import io.netty.handler.codec.MessageToMessageEncoder;
 
 import java.util.List;

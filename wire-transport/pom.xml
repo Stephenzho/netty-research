@@ -12,6 +12,14 @@
 
     <dependencies>
         <dependency>
+            <groupId>cn.shuyiio</groupId>
+            <artifactId>wire-common</artifactId>
+            <version>${app}</version>
+        </dependency>
+
+
+
+        <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-all</artifactId>
         </dependency>
