@@ -13,6 +13,7 @@
         <module>wire-server</module>
         <module>wire-common</module>
         <module>wire-client</module>
+        <module>wire-context</module>
     </modules>
 
     <properties>
@@ -23,6 +24,7 @@
         <guava>19.0</guava>
         <slf4j>1.7.29</slf4j>
         <junit>4.12</junit>
+        <spring>5.2.2.RELEASE</spring>
     </properties>
 
     <dependencyManagement>
@@ -47,6 +49,13 @@
                 <artifactId>guava</artifactId>
                 <version>${guava}</version>
             </dependency>
+
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-context</artifactId>
+                <version>${spring}</version>
+            </dependency>
+
 
             <dependency>
                 <groupId>org.slf4j</groupId>
