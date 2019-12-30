@@ -20,19 +20,24 @@ import io.netty.handler.traffic.GlobalTrafficShapingHandler;
 import io.netty.util.concurrent.DefaultThreadFactory;
 import io.netty.util.concurrent.EventExecutorGroup;
 import io.netty.util.concurrent.UnorderedThreadPoolEventExecutor;
+import lombok.extern.slf4j.Slf4j;
 
 
 /**
  * @author zhoushuyi
  */
+@Slf4j
 public final class Server {
 
-    private volatile boolean isStart = false;
+    private io.netty.channel.Channel channel;
+
+    private NioEventLoopGroup boss;
+    private NioEventLoopGroup worker;
 
 
 
     public synchronized void start() throws InterruptedException {
-        if (!isStart) {
+        if (channel == null) {
             doStart();
         }
     }
@@ -42,8 +47,8 @@ public final class Server {
 
         ServerBootstrap serverBootstrap = new ServerBootstrap();
 
-        NioEventLoopGroup boss = new NioEventLoopGroup(1, new DefaultThreadFactory("Boss"));
-        NioEventLoopGroup worker = new NioEventLoopGroup(0, new DefaultThreadFactory("Work"));
+        boss = new NioEventLoopGroup(1, new DefaultThreadFactory("Boss"));
+        worker = new NioEventLoopGroup(0, new DefaultThreadFactory("Work"));
 
         try {
 
@@ -92,13 +97,31 @@ public final class Server {
 
             ChannelFuture channelFuture = serverBootstrap.bind(8090).sync();
 
-            channelFuture.channel().closeFuture().syncUninterruptibly();
+            channelFuture.syncUninterruptibly();
 
-            isStart = true;
+            channel = channelFuture.channel();
+        } catch (Throwable e){
+            log.error(e.getMessage(), e);
+            stop();
+        }
+    }
 
-        } finally {
-            boss.shutdownGracefully();
-            worker.shutdownGracefully();
+
+    public void stop() {
+        try {
+            if (channel != null) {
+                channel.close();
+            }
+
+            if (boss != null) {
+                boss.shutdownGracefully();
+            }
+            if (worker != null) {
+                worker.shutdownGracefully();
+            }
+
+        } catch (Throwable e) {
+            log.error(e.getMessage(), e);
         }
     }
 
